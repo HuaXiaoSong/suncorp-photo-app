@@ -50,8 +50,8 @@ function App() {
                 </button>
             </div>
             {selectedPhoto && (
-                <div className="modal">
-                    <div className="modal-content" data-testid={selectedPhoto.id}>
+                <div className="modal" data-testid={'modal-' + selectedPhoto.id}>
+                    <div className="modal-content">
                         <span data-testid={'close-button-' + selectedPhoto.id} className="close"
                               onClick={handleClose}>&times;</span>
                         <img src={selectedPhoto.url} alt={selectedPhoto.title}/>

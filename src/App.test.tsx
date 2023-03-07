@@ -56,11 +56,47 @@ describe('App component', () => {
         expect(window.fetch).toHaveBeenCalledWith('https://jsonplaceholder.typicode.com/photos?_limit=6&_start=6');
     });
 
+    it('should request load more photos to API when the button is clicked', async () => {
+        // Mock the fetch function
+        jest.spyOn(window, 'fetch').mockImplementationOnce(() =>
+            // @ts-ignore
+            Promise.resolve({
+                json: () =>
+                    Promise.resolve([
+                        { id: 1, title: 'Photo 1', url: 'http://example.com/photo1.jpg' },
+                        { id: 2, title: 'Photo 2', url: 'http://example.com/photo2.jpg' },
+                        { id: 3, title: 'Photo 3', url: 'http://example.com/photo3.jpg' },
+                    ]),
+            })
+        );
+
+        // Render the App component
+        render(<App />);
+
+        // Wait for the initial API request to complete
+        await waitFor(() =>
+            expect(window.fetch).toHaveBeenCalledWith(
+                'https://jsonplaceholder.typicode.com/photos?_limit=6&_start=0'
+            )
+        );
+
+        // Click the "Load More" button
+        fireEvent.click(screen.getByText('Load More'));
+
+        // Wait for the second API request to complete
+        await waitFor(() =>
+            expect(window.fetch).toHaveBeenCalledWith(
+                'https://jsonplaceholder.typicode.com/photos?_limit=6&_start=6'
+            )
+        );
+    });
+
+
     it('should open the selected photo in a modal', async () => {
         render(<App/>);
         const photo = await screen.findByAltText('accusamus beatae ad facilis cum similique qui sunt');
         fireEvent.click(photo);
-        const modal = screen.getByTestId('1').closest('.modal');
+        const modal = screen.getByTestId('modal-1');
         expect(modal).toBeInTheDocument();
     });
 
