@@ -6,7 +6,6 @@ function App() {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [limit] = useState<number>(6);
     const [start, setStart] = useState<number>(0);
-    const [isMounted, setIsMounted] = useState<boolean>(false);
     const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
     const loadMore = () => {
@@ -14,16 +13,13 @@ function App() {
     };
 
     useEffect(() => {
-        setIsMounted(true);
         fetch(`https://jsonplaceholder.typicode.com/photos?_limit=${limit}&_start=${start}`)
             .then((response) => response.json())
             .then((newPhotos: Photo[]) => {
-                if (isMounted) {
-                    setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
-                }
+                setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
             })
             .catch((error) => console.log(error));
-    }, [start, limit, isMounted]);
+    }, [start, limit]);
 
     const handleClick = (photo: Photo) => {
         setSelectedPhoto(photo);
